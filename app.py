@@ -13,7 +13,17 @@ def order(price,side, size, symbol,leverage,stopprice):
     client = Trade(key=config.API_KEY, secret=config.SECRET_KEY, passphrase=config.WEBHOOK_PASSPHRASE,
                    is_sandbox=False, url='')
     print("Connected to Kucoin...")
-    client.create_market_order(symbol, side, leverage, 'LOl2', size=size)
+
+    positions = client.get_all_position()
+
+    if len(positions) == 0:
+        order = client.create_market_order(symbol, side, leverage, 'LOl2', size=size)
+        position_detail = client.get_position_details(symbol)
+    else:
+        return "fail"
+    return "success"
+
+
 
 @app.route('/')
 def hello_world():
@@ -42,7 +52,7 @@ def webhook():
 
     order_response = order(price, side, quantity, symbol, leverage,stopprice)
 
-    if order_response:
+    if order_response=="Success":
         return "200 OK"
     else:
         print("order failed")
